@@ -1,6 +1,6 @@
 // javac DisjointSets.java
 // java DisjointSets
-// \Documents\Gitlet\Algorithms
+// Documents\Gitlet\Algorithms
 
 public class DisjointSets {
 
@@ -88,4 +88,7 @@ public class DisjointSets {
 			System.out.print(ds.size[i] + " ");
 		}
 	}
+
+
+	// Create Connectivity 2D array and run it using DS.
 }
