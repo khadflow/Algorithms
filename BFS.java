@@ -64,16 +64,31 @@ public class BFS {
 	}
 
 	public boolean isBipartite() {
-		
-		// TODO
-		// RESET COLORS TO 0s
 		Arrays.fill(colors, 0);
-		return false;
+		boolean ret = colorGraph(0, 1);
+		Arrays.fill(visited, false);
+		return ret;
 	}
 
 	private boolean colorGraph(int vertex, int color) {
-		// TODO
-		return false;
+		boolean fin = true;
+		if (visited[vertex] && colors[vertex] != color) {
+			return false;
+		} else if (visited[vertex] && colors[vertex] == color) {
+			return true;
+		} else if (!visited[vertex]) {
+			visited[vertex] = true;
+			colors[vertex] = color;
+			for (int i = 0; i < graph[vertex].size(); i++) {
+				int v = graph[vertex].get(i);
+				if (color == 1) {
+					fin &= colorGraph(v, 2);
+				} else {
+					fin &= colorGraph(v, 1);
+				}
+			}
+		}
+		return fin;
 	}
 
 	public static void main(String[] args) {
@@ -89,7 +104,20 @@ public class BFS {
 		graph.addEdge(5, 8);
 		graph.addEdge(8, 9);
 		//graph.bfs(0);
-		graph.findPath(0, 9);
+		//graph.findPath(0, 9);
+		System.out.println("is graph bipartite ? " + graph.isBipartite());
+		BFS graph2 = new BFS(10);
+		graph2.addEdge(0, 1);
+		graph2.addEdge(1, 2);
+		graph2.addEdge(2, 3);
+		graph2.addEdge(2, 4);
+		graph2.addEdge(2, 7);
+		//graph2.addEdge(7, 4);
+		graph2.addEdge(3, 6);
+		graph2.addEdge(3, 5);
+		graph2.addEdge(5, 8);
+		graph2.addEdge(8, 9);
+		System.out.println("is graph2 bipartite ? " + graph2.isBipartite());
 
 	}
 }
