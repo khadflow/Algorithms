@@ -2,6 +2,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 // Direct Mapping
+
 public class Cache {
 
 	private Disk disk;
@@ -13,18 +14,23 @@ public class Cache {
 	private double numTagBits;
 	private double numIndexBits;
 	private double numOffSetBits;
+	private float cacheAccess;
+	private float hit, miss;
+	private float hitTime = 1.0f; // default
+	private float missPenalty;
 
 	public Cache() {
 		disk = new Disk();
-		byteInstr = "00";
+		byteInstr = "0x00";
 
+		hit = 0;
+		miss = 0;
 		wordsPerBlock = 1; // default
+		missPenalty = 10 + wordsPerBlock;
 		numCacheBlocks = 4; // default
 		bytesPerBlock = wordsPerBlock * 4;
+		cacheAccess = 0;
 		cache = new int[numCacheBlocks][2 + wordsPerBlock];
-		// Cache Size Input
-		// if 1 word per block : # of index bits = log(# of blocks in Cache), len(tag) = 32 - len(index)
-		// else : # of offset bits = log(wordsPerBlock), # of index bits = log(# of blocks in Cache)[offset: length], len(tag) = 32 - len(index) - len(offset) 
 
 		if (wordsPerBlock == 1) {
 			numOffSetBits = 0;
@@ -32,9 +38,8 @@ public class Cache {
 			numOffSetBits = (int) Math.ceil(Math.log(wordsPerBlock));
 		}
 
-		numIndexBits = (int) Math.ceil(Math.log(numCacheBlocks)); // 2
-		// 8 is a placeholder for the total number of bits that represent the instruction address
-		numTagBits = 8 - numIndexBits - numOffSetBits;
+		numIndexBits = (int) Math.ceil(Math.log(numCacheBlocks));
+		numTagBits = 32 - numIndexBits - numOffSetBits;
 
 		cacheInfo();
 	}
@@ -43,47 +48,47 @@ public class Cache {
 	// addr -> 0xFF
 	public void fetchAddr(String addr) {
 		// Direct Map Cache
-		 // TODO Add offset functionality for a Ccahe with more than one word per block
-		byteInstr = addr.substring(2, addr.length());
+		cacheAccess += 1.0;
+		byteInstr = addr;
 		String[] tio = TIO(hexToBinary(addr));
 		int tag = Integer.parseInt(tio[0], 2);
 		int index = Integer.parseInt(tio[1], 2) % numCacheBlocks;
 
+		int offset = 0;
+		if (tio[2].length() > 0) {
+			offset = Integer.parseInt(tio[2], 2);
+		}
+
+		System.out.println("Fetch Addr TIO: " + tag + " " + index + " " + offset);
+
 		// MISS
-		if (cache[index][1] != tag || cache[index][0] == 0) {
+		if (cache[index][1] != tag || cache[index][0] == 0 || cache[index][2 + offset] == 0) {
+
 			// STORE DATA THEN RETURN
-			System.out.println("MISS at ADDR " + addr);
-			IF(addr); // store data in cache
-		} else if (cache[index][1] == tag && cache[index][0] != 0) {
+			miss += 1.0;
+			storeTIO(tio); // store data in cache
+			System.out.println("MISS at ADDR " + addr + " : "+ cache[index][2 + offset]);
+		} 
+		// HIT
+		else if (cache[index][1] == tag && cache[index][0] != 0) {
+
 			// RETURN DATA
-			System.out.println("HIT at ADDR " + addr + " : "+ cache[index][2]);
+			hit += 1.0;
+			System.out.println("HIT at ADDR " + addr + " : "+ cache[index][2 + offset]);
 		}
 		return;
 	}
 
-	// Instruction Fetch && Store Binary
-	private String IF(String addr) {
-		String ret = hexToBinary(addr);
-		storeTIO(ret);
-		return ret;
-	}
 
-	private String hexToBinary(String s) {
+	// convert hex into an Integer using the parseInt() radix parameter
+	// calculate the input's Block Address and return it for parsing
+	private String hexToBinary(String hex) {
 		String binary = "";
-		String convert = "";
-		for (int i = 2; i < s.length(); i++) {
-			int res = getInt(s, i);
-			if (res == -1) {
-				return "EMPTY STRING";
-			}
-			
-			convert += Integer.toString(res);
-		}
-		int blockAddr = calculateBlockAddress(Integer.parseInt(convert));
-		byteInstr = s.substring(2, s.length());
+
+		int blockAddr = calculateBlockAddress(Integer.parseInt(hex.substring(2, hex.length()), 16));
 
 		// "binary" is the binary string of the Block Address used to generate TIO
-		binary = padLeft(Integer.toBinaryString(blockAddr), 8); // default value of 8 bits
+		binary = padLeft(Integer.toBinaryString(blockAddr), 32); // default value of 8 bits
 		return binary;
 	}
 
@@ -99,29 +104,13 @@ public class Cache {
 	}
 
 	private int getInt(String s, int i) {
-		char c = s.charAt(i);
-		if (c >= 48 && c <= 57) {
-			int convert = c - 48;
-			return convert;
-		} else if (c >= 97 && c <= 102) {
-			int convert = 10;
-			int j = 0;
-			char[] vals = new char[] {'a', 'b', 'c', 'd', 'e', 'f'};
-			while (j < vals.length && c != vals[j]) {
-				convert++;
-				j++;
-			}
-			return convert;
-		}
-		return -1;
+		return Integer.parseInt(Character.toString(s.charAt(i)), 16);
 	}
 
 	// Block Addr = Byte Addr / Bytes per Block -> (1 word == 4 bytes == 32 bits)
 	// Index = Block Addr % # of Blocks in Cache
 	// Used to has index into the Cache
 	private int calculateBlockAddress(int byteAddress) {
-		// How many words are in each block
-		// words will give me the number of bytes
 		int blockAddress = byteAddress / bytesPerBlock;
 		return blockAddress;
 	}
@@ -130,15 +119,14 @@ public class Cache {
 		String offset = "";
 		String index, tag;
 		if (numOffSetBits != 0) {
-			offset = binary.substring((int) (numTagBits + numIndexBits), 8);
+			offset = binary.substring((int) (numTagBits + numIndexBits), 32);
 		}
 		tag = binary.substring(0, (int) numTagBits);
 		index = binary.substring((int) numTagBits, (int) (numTagBits + numIndexBits));
 		return new String[] {tag, index, offset};
 	}
 
-	private void storeTIO(String binary) {
-		String[] tio = TIO(binary);
+	private void storeTIO(String[] tio) {
 		int tag, index, offset;
 		tag = Integer.parseInt(tio[0], 2);
 		index = Integer.parseInt(tio[1], 2) % numCacheBlocks;
@@ -148,12 +136,10 @@ public class Cache {
 			offset = Integer.parseInt(tio[2], 2);
 		}
 
-		System.out.println("TIO: " + tag + " " + index + " " + offset);
-
-		int data = disk.getData("0x" + byteInstr); // String s = Integer.toHexString(int num)
+		int data = disk.getData(byteInstr);
 		cache[index][1] = tag;
 		cache[index][0] = 1; // valid bit
-		cache[index][2] = data;
+		cache[index][2 + offset] = data;
 
 	}
 
@@ -167,8 +153,8 @@ public class Cache {
 		public Disk() {
 			index = 0;
 			testInstructions = new HashMap<>(); //
-			addr = new String[] {"0x03", "0x0a", "0x0c", "0xaa", "0xc4"};
-			int[] testData = new int[] {1, 2, 3, 4, 5};
+			addr = new String[] {"0x00000000", "0x00000004", "0x00000008", "0x0000000c", "0x00000010"};
+			int[] testData = new int[] {0, 1, 2, 3, 4};
 			for (int i = 0; i < addr.length; i++) {
 				testInstructions.put(addr[i], testData[i]);
 			}
@@ -207,20 +193,60 @@ public class Cache {
 		}
 	}
 
+	public void AMAT_Info() {
+		System.out.println("Miss Penalty: " + missPenalty + ", Hit Time: " + hitTime);
+	}
 
+	public void cacheAccess() {
+		System.out.println("Number of Cache Accesses: " + cacheAccess);
+	}
 
+	public void miss() {
+		System.out.println("Misses: " + miss);
+	}
+
+	public void hits() {
+		System.out.println("Hits: " + hit);
+	}
+
+	public void hitRate() {
+		if (cacheAccess == 0) {
+			return;
+		}
+		float x = (hit / cacheAccess);
+		System.out.println("Hit Rate: " + x);
+	}
+
+	public void missRate() {
+		if (cacheAccess == 0) {
+			return;
+		}
+		float x = (miss / cacheAccess);
+		System.out.println("Miss Rate: " + x);
+	}
+
+	public void AMAT() {
+		if (cacheAccess == 0) {
+			return;
+		}
+		System.out.println("AMAT: " + (hitTime + ((miss / cacheAccess) * missPenalty)));
+	}
 
 
 	public static void main(String[] args) {
 		Cache cache = new Cache();
-		String[] addr = new String[] {"0x03", "0x0a", "0x0c", "0xaa", "0xc4"};
+		String[] addr = new String[] {"0x00000000", "0x00000004", "0x00000008", "0x0000000c", "0x00000010", "0x00000010", "0x00000000"};
+
 		for (String s : addr) {
 			cache.fetchAddr(s);
+			/*cache.cacheAccess();
+			cache.hits();
+			cache.miss();*/
 		}
-		cache.fetchAddr(addr[addr.length - 1]);
+		//cache.hitRate();
+		//cache.missRate();
+		//cache.AMAT();
 
 		cache.printCache();
-
-		//System.out.println(Integer.parseInt("c", 16)); // EASY STRING (BINARY OR HEX) to INTEGER w/ RADIX/BASE (2, 16)
 	}
 }
