@@ -1,7 +1,5 @@
 public class Matrix {
 	
-
-	/* Gaussian Elimination */
 	private int[][] A;
 	private int[] dimensions;
 	
