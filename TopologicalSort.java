@@ -38,12 +38,12 @@ public class TopologicalSort {
 	// SSSP
 	// Find the shortest path from Node A to all other nodes in the graph
 	// Run Topological sort
-	//
-	public int[] sssp() {
+	// 
+	public int[] sssp(int start) {
 		// run topological sort
 		ArrayList<Integer> ts = topologicalSort();
 		reset();
-		paths[ts.get(0)] = 0;
+		paths[start] = 0;
 
 		for (int i = 0; i < ts.size(); i++) {
 			int vertex = ts.get(i);
@@ -62,7 +62,11 @@ public class TopologicalSort {
 		for (int i = 0; i < u_edges.size(); i++) {
 			int v = u_edges.get(i)[0];
 			int w = u_edges.get(i)[1];
-			relaxEdge(v, paths[vertex] + w);
+			if (paths[vertex] == Integer.MAX_VALUE) {
+				relaxEdge(v, w);
+			} else {
+				relaxEdge(v, paths[vertex] + w);
+			}
 		}
 	}
 
@@ -131,7 +135,16 @@ public class TopologicalSort {
 		tp.addEdge(5, 8, 9);
 		tp.addEdge(6, 8, 1);
 		tp.addEdge(7, 8, 2);
-		int[] path = tp.sssp();
+		int[] path = tp.sssp(1);
+
+		for (int i = 0; i < path.length; i++) {
+			System.out.println(i + " " + path[i]);
+		}
+
+		System.out.println();
+
+		path = tp.sssp(2);
+		
 		for (int i = 0; i < path.length; i++) {
 			System.out.println(i + " " + path[i]);
 		}
