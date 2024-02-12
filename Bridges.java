@@ -19,7 +19,7 @@ public class Bridges {
 	@param n, number of vertices in the graph
 	*/
 	public void createGraph(int n) {
-		for (int i = 1; i < n + 1; i++) {
+		for (int i = 0; i < n + 1; i++) {
 			graph.put(i, new ArrayList<>());
 		}
 	}
@@ -74,9 +74,9 @@ public class Bridges {
 		bridges = new ArrayList<>();
 		Arrays.fill(ids, Integer.MAX_VALUE);
 		Arrays.fill(low_link, Integer.MAX_VALUE);
-		UID = 1;
+		UID = 0;
 
-		for (int i = 1; i < graph.size() + 1; i++) {
+		for (int i = 0; i < graph.size(); i++) {
 			if (!visited[i]) {
 				dfs(i);
 			}
@@ -144,6 +144,38 @@ public class Bridges {
 		5 5
 		6 6
 		7 7
+		*/
+
+		b = new Bridges(8);
+		b.addEdge(0, 1);
+		b.addEdge(1, 2);
+		b.addEdge(2, 0);
+		b.addEdge(2, 3);
+		b.addEdge(3, 4);
+		b.addEdge(2, 5);
+		b.addEdge(5, 6);
+		b.addEdge(6, 7);
+		b.addEdge(7, 8);
+		b.addEdge(8, 5);
+
+		b.findBridges();
+
+		b.low_link();
+		// Example Output
+		/*
+		Edge From 3 to 4
+		Edge From 2 to 3
+		Edge From 2 to 5
+		0 0
+		1 0
+		2 0
+		3 3
+		4 4
+		5 5
+		6 5
+		7 5
+		8 5
+		9 2147483647
 		*/
 	}
 }
