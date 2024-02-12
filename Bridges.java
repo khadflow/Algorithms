@@ -11,14 +11,6 @@ public class Bridges {
 
 	public Bridges(int n) {
 		graph = new HashMap<>();
-		visited = new boolean[n + 1];
-		ids = new int[n + 1];
-		low_link = new int[n + 1];
-
-		bridges = new ArrayList<>();
-		Arrays.fill(ids, Integer.MAX_VALUE);
-		Arrays.fill(low_link, Integer.MAX_VALUE);
-		UID = 1;
 		createGraph(n);
 	}
 
@@ -75,6 +67,15 @@ public class Bridges {
 	Finds all bridges in the current graph and prints them out.
 	*/
 	public void findBridges() {
+		visited = new boolean[graph.size() + 1];
+		ids = new int[graph.size() + 1];
+		low_link = new int[graph.size() + 1];
+
+		bridges = new ArrayList<>();
+		Arrays.fill(ids, Integer.MAX_VALUE);
+		Arrays.fill(low_link, Integer.MAX_VALUE);
+		UID = 1;
+
 		for (int i = 1; i < graph.size() + 1; i++) {
 			if (!visited[i]) {
 				dfs(i);
@@ -107,7 +108,6 @@ public class Bridges {
 	}
 
 	public static void main(String[] args) {
-		/*
 		Bridges b = new Bridges(7);
 		b.addEdge(1, 2);
 		b.addEdge(2, 3);
@@ -117,7 +117,6 @@ public class Bridges {
 		b.addEdge(5, 6);
 		b.addEdge(6, 4);
 		b.findBridges();
-		*/
 		// Output
 		// "Edge From 3 to 4"
 		
@@ -145,5 +144,6 @@ public class Bridges {
 		5 5
 		6 6
 		7 7
+		*/
 	}
 }
