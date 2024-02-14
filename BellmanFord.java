@@ -1,3 +1,12 @@
+/**
+ * Implementation of the Bellman-Ford Algorithm to find the shortest path from
+ * one vertex to all other vertices in the graph. Able to handle negative edge
+ * weights in comparison to Dijkstra's Algorithm.
+ * 
+ * Time Complexity: O(V*E)
+ * 
+ * @author Khadijah Flowers, khadijah20flowers@gmail.com
+ */
 import java.util.*;
 
 public class BellmanFord {
@@ -5,11 +14,6 @@ public class BellmanFord {
 	private HashMap<Integer, ArrayList<int[]>> graph; // directed graph with edge weights
 	private ArrayList<int[]> edges; // from -> to
 	
-	/* 
-	Dijkstra's Algorith, fails on a graph with negative edge weights
-	Bellman Ford works well on a graph with negative edge weights anmd detects negative cycles
-	Runtime : O(VE)
-	*/
 	public BellmanFord(int n) {
 		graph = new HashMap<>();
 		edges = new ArrayList<>();
