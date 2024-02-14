@@ -1,3 +1,12 @@
+/**
+ * Implementation of the Floyd-Warshall Algorithm to compute the All Pairs Shortest Paths
+ * in a graph using dynamic programming. This algorithm iterates through all possible intermediate
+ * nodes to determine the best / shortest path between any two vertices i and j.
+ * 
+ * Time Complexity: O(V^3)
+ * 
+ * @author Khadijah Flowers, khadijah20flowers@gmail.com
+ */
 import java.util.*;
 
 public class FloydWarshall {
@@ -6,11 +15,7 @@ public class FloydWarshall {
 	private int[][] distances;
 	
 	/* 
-	Floyd-Warshall is an APSP Algoritm
-	All Pairs Shortest Path (APSP)
-	Calculates whether or not there is a better distance from u -> v
-	going through intermediate nodes {1, 2,..., k}
-	Runtime: O(V^3)
+	@param n, size of the graph.
 	*/
 	public FloydWarshall(int n) {
 		graph = new int[n + 1][n + 1];
@@ -42,6 +47,7 @@ public class FloydWarshall {
 
 	/*
 	Copies all existing edges from the graph to the distances array
+ 	before beginning the APSP calculation.
 	*/
 	private void copyEdges() {
 		for (int i = 0; i < graph.length; i++) {
@@ -54,7 +60,7 @@ public class FloydWarshall {
 	}
 
 	/*
-	Calculates the shortest distance for all pairs on vertices
+	Calculates the shortest distance for all pairs of vertices
 	@output distance array, returns a 2D integer array calculating the shortest path
 			between all vertices in the graph
 	*/
