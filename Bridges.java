@@ -1,3 +1,12 @@
+/**
+ * Implementation of the Bridges Algorithm to detect and return the bridges
+ * in a graph. Bridges are defined as edges in the graph that, if removed,
+ * would disconnect the graph into two or more connected components.
+ * 
+ * Time Complexity: O(V + E)
+ * 
+ * @author Khadijah Flowers, khadijah20flowers@gmail.com
+ */
 import java.util.*;
 
 public class Bridges {
@@ -9,6 +18,9 @@ public class Bridges {
 	private int UID;
 	private ArrayList<Integer> bridges;
 
+	/*
+ 	@param n, size of the graph.
+  	*/
 	public Bridges(int n) {
 		graph = new HashMap<>();
 		createGraph(n);
