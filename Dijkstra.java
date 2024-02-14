@@ -1,3 +1,12 @@
+/**
+ * Implementation of Dijkstra's Algorithm to compute the shortest paths from a start node to
+ * all other nodes in a graph with positive edge weights. This implementation uses an
+ * indexed priority queue to determine which path to take.
+ * 
+ * Time Complexity: O(V + E)
+ * 
+ * @author Khadijah Flowers, khadijah20flowers@gmail.com
+ */
 import java.util.*;
 
 public class Dijkstra {
@@ -8,6 +17,9 @@ public class Dijkstra {
 
 	private boolean visited[];
 
+	/*
+ 	@param n, number of vertices in the graph.
+  	*/
 	public Dijkstra(int n) {
 		pq = new PriorityQueue<>();
 		ipq = new HashMap<>();
@@ -16,21 +28,34 @@ public class Dijkstra {
 		createGraph(n);
 	}
 
-
+	/*
+ 	Creates the adjacency lists for the nodes in the graph.
+ 	@param n, the number of nodes in the graph.
+ 	*/
 	private void createGraph(int n) {
 		for (int i = 0; i < n + 1; i++) {
 			graph.put(i, new ArrayList<>());
 		}
 	}
 
-	// DAG
-	// Add an edge from u -> v exclusively
+	/*
+ 	Adds a directed edge from u to v.
+ 	@param u, vertex
+  	@param v, vertex
+   	@param weight, the weight of the edge between u and v
+ 	*/
 	public void addEdge(int u, int v, int weight) {
 		ArrayList<int[]> u_edges = graph.get(u);
 		u_edges.add(new int[] {v, weight});
 	}
 
-
+	/*
+ 	Calculates the distance of the shortest path from the start node to all other
+  	nodes in the graph. The indexed priority queue is sorted by the shortest distance calcuated
+   	so far.
+ 	@param start, start vertex
+  	@output, the final distance array.
+ 	*/
 	public int[] shortestPath(int start) {
 		int[] distance = new int[graph.size()];
 		Arrays.fill(distance, Integer.MAX_VALUE);
@@ -51,7 +76,6 @@ public class Dijkstra {
 			int weight = process.getWeight();
 			ArrayList<int[]> edges = graph.get(vertex);
 			for (int i = 0; i < edges.size(); i++) {
-				// Should I add this to the pq now?
 				int newWeight = edges.get(i)[1] + weight;
 				int v = edges.get(i)[0];
 				relaxEdges(v, newWeight, distance);
@@ -61,6 +85,14 @@ public class Dijkstra {
 
 	}
 
+	/*
+ 	Relaxes the edge leading to the vertex if the newWeight is better than the distance
+  	calculated so far. If the distance is better, the priority queue is updated with the
+   	vertex and its new distance from the start node.
+ 	@param vertex, vertex
+  	@param newWeight, possible new distance for the vertex
+   	@param distances, the distances array with the length of the shortest paths calculated so far.
+ 	*/
 	private void relaxEdges(int vertex, int newWeight, int[] distances) {
 		if (distances[vertex] == Integer.MAX_VALUE) {
 			distances[vertex] = newWeight;
@@ -77,7 +109,7 @@ public class Dijkstra {
 		}
 	}
 
-	// Pairs representing (vertex, edge_weight)
+	/* Class representing the end point vertex and the weight of the edge leading to it. */
 	public class Pair implements Comparable<Pair> {
 		private int[] pair;
 
@@ -103,46 +135,6 @@ public class Dijkstra {
 			}
 		}
 	}
-
-	// TEST SUCCESSFUL
-	// Testing PQ ordering Pair(vertex, weight)
-	// Indexed Priority Queue (vertex -> *Pair(vertex, weight))
-	// If the new pair is better than the old pair, then I replace it.
-	// get pointer to the pair from Indexed PQ : check if new weight is better first
-	// if neew weight is better: look for pointer in the actual PQ and remove it
-	// Replace the Pair() in both the IPQ and the PQ
-	/*public void testPQ() {
-
-		int start = 50;
-		for (int i = 1; i < 50; i++) {
-			Pair p = new Pair(i, start);
-			ipq.put(i, p);
-			pq.add(p);
-			start--;
-		}
-
-		// emptying the Priority Queue
-		while (pq.size() > 0) {
-			Pair c = pq.poll();
-			System.out.println(c.getVertex() + " " + c.getWeight());
-		}
-
-		// Check if pair in IPQ maps correctly to pair in PQ
-		// LOGIC TO UPDATE QUEUE
-		int newWeight = 0;
-		Pair p = ipq.get(1); // weight of 50
-		if (pq.contains(p) && p.getWeight() > newWeight) {
-			Pair newP = new Pair(p.getVertex(), newWeight);
-			pq.remove(p);
-			pq.add(newP);
-			ipq.put(newP.getVertex(), newP);
-		}
-
-		while (pq.size() > 0) {
-			Pair c = pq.poll();
-			System.out.println(c.getVertex() + " " + c.getWeight());
-		}
-	}*/
 
 	// Dijkstra's
 	// Relax all edges from currNode
