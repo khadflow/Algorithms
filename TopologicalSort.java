@@ -1,14 +1,23 @@
+/**
+ * Implementation of Topological Sort. This algorithm sorts vertices based on
+ * edge dependencies in a DAG.
+ * 
+ * Time Complexity: O(V + E)
+ * 
+ * @author Khadijah Flowers, khadijah20flowers@gmail.com
+ */
 import java.util.*;
 
 public class TopologicalSort {
 	
-	// DAG represented by an adjacency matrix
 	private HashMap<Integer, ArrayList<int[]>> graph;
 	private boolean[] visited;
 
-	// For SSSP Algorithm
 	private int[] paths;
 
+	/*
+ 	@param n, size of the graph.
+ 	*/
 	public TopologicalSort(int n) {
 		graph = new HashMap<>();
 		visited = new boolean[n + 1];
@@ -17,6 +26,9 @@ public class TopologicalSort {
 		createGraph(n);
 	}
 
+	/*
+	@param n, create the adjacency lists for all n vertices in the graph.
+	*/
 	private void createGraph(int n) {
 		for (int i = 1; i < n + 1; i++) {
 			graph.put(i, new ArrayList<>());
@@ -24,21 +36,22 @@ public class TopologicalSort {
 		}
 	}
 
-	// DAG
-	// Add an edge from u -> v exclusively
+	/*
+ 	Creates a single directed edge going from u to v.
+ 	@param u, vertex
+  	@param v, vertex
+	@param weight, the edge weigth between u and v
+ 	*/
 	public void addEdge(int u, int v, int weight) {
 		ArrayList<int[]> u_edges = graph.get(u);
 		u_edges.add(new int[] {v, weight});
 	}
 
-	// Topological Sort
-	// Starting from any node, run DFS and return the resulting list
-	// Add the resulting list to the final list in reverse order
-
-	// SSSP
-	// Find the shortest path from Node A to all other nodes in the graph
-	// Run Topological sort
-	// 
+	/*
+ 	Runs Single Source Shortest Path from the start node.
+  	@param start, starting vertex for the shortest path algorithm.
+   	@output the shortest paths distance array from the start node.
+ 	*/
 	public int[] sssp(int start) {
 		// run topological sort
 		ArrayList<Integer> ts = topologicalSort();
@@ -56,7 +69,10 @@ public class TopologicalSort {
 		return paths;
 	}
 
-	// Update all edges from the current node
+	/*
+ 	Relax all of the edges coming from the vertex if the distance is better.
+ 	@param vertex, vertex 
+ 	*/
 	private void sssp_helper(int vertex) {
 		ArrayList<int[]> u_edges = graph.get(vertex);
 		for (int i = 0; i < u_edges.size(); i++) {
@@ -70,6 +86,11 @@ public class TopologicalSort {
 		}
 	}
 
+	/*
+ 	Update the shortest distance to vertex if the new distance is better.
+ 	@param vertex, vertex 
+  	@param new_weight, a possible new shortest path for vertex if it is better than the current distance.
+ 	*/
 	private void relaxEdge(int vertex, int new_weight) {
 		if (paths[vertex] > new_weight) {
 			paths[vertex] = new_weight;
@@ -81,7 +102,11 @@ public class TopologicalSort {
 		Arrays.fill(paths, Integer.MAX_VALUE);
 	}
 
-	// DFS, returning nodes seen in their reverse order
+	/*
+ 	Creates the topological sort array.
+ 	@param currNode, vertex
+  	@param arr, the topological sort array.
+ 	*/
 	private ArrayList<Integer> dfs(int currNode, ArrayList<Integer> arr) {
 		if (visited[currNode]) {
 			return null;
@@ -100,7 +125,9 @@ public class TopologicalSort {
 		return arr;
 	}
 
-	// unit testing
+	/*
+ 	Runs topological sort on the current graph.
+	*/
 	private ArrayList<Integer> topologicalSort() {
 		ArrayList<Integer> arr;
 		ArrayList<Integer> tp = new ArrayList<>();
