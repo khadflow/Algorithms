@@ -1,3 +1,11 @@
+/**
+ * Implementation of the shortest path algorithm on a graph with undirected edges
+ * and equal edge weight values.
+ * 
+ * Time Complexity: O(V + E)
+ * 
+ * @author Khadijah Flowers, khadijah20flowers@gmail.com
+ */
 import java.util.*;
 
 public class ShortestPath {
@@ -8,7 +16,9 @@ public class ShortestPath {
 	private int[] edgeTo;
 	private int[] paths;
 
-	// does not include 0
+	/*
+ 	@param n, size of the graph, not including 0
+	*/
 	public ShortestPath(int n) {
 		visited = new boolean[n + 1];
 		edgeTo = new int[n + 1];
@@ -18,12 +28,19 @@ public class ShortestPath {
 		createGraph();
 	}
 
+	/*
+ 	Create the adjacency lists for the n vertices in the graph.
+ 	*/
 	private void createGraph() {
 		for (int i = 1; i < nodes.length; i++) {
 			edges.put(i, new ArrayList<>());
 		}
 	}
 
+	/*
+ 	Resets the visited, paths, and edgeTo arrays before computing the shortest path for
+  	a new source node.
+ 	*/
 	private void reset() {
 		for (int i = 0; i < visited.length; i++) {
 			visited[i] = false;
@@ -32,6 +49,11 @@ public class ShortestPath {
 		}
 	}
 
+	/*
+ 	Adds an undirected edge between vertices a and b.
+ 	@param a, vertex
+  	@param b, vertex
+	*/
 	public void addEdge(int a, int b) {
 		ArrayList<Integer> a_edges, b_edges;
 		a_edges = edges.get(a);
@@ -40,12 +62,23 @@ public class ShortestPath {
 		b_edges.add(a);
 	}
 
-	// pl == path length
+	/*
+ 	Computes the shortest path from s to t in an undirected, equally weighted graph.
+ 	@param s, start node
+  	@para, t, target node
+ 	*/
 	public void shortestPath(int s, int t) {
 		reset();
 		findPath(s, t, 0);
 	}
 
+	/*
+ 	Computes the shortest path from s to t. Updates the shortest path if pl
+  	is a better distance than the current value in the distance array.
+ 	@param pl, current distance
+ 	@param s, start node
+  	@param t, target node
+ 	*/
 	private void findPath(int s, int t, int pl) {
 		if (s == t) {
 			return;
@@ -69,6 +102,7 @@ public class ShortestPath {
 		}
 	}
 
+	/* Debugging Function */
 	public void print_edges() {
 		for (int i = 0; i < edgeTo.length; i++) {
 			System.out.println(i + " " + edgeTo[i] + " " + paths[i]);
