@@ -1,5 +1,13 @@
-import java.util.*;
+/**
+ * Implementation of the Depth First Search Algorithm (DFS). This algorithm recursively
+ * traverses the edges of all nodes in a connected component.
+ * 
+ * Time Complexity: O(V + E)
+ * 
+ * @author Khadijah Flowers, khadijah20flowers@gmail.com
+ */
 
+import java.util.*;
 
 public class DFS {
 	
@@ -8,6 +16,9 @@ public class DFS {
 	private boolean[] visited;
 	private int[] edgeTo;
 
+	/*
+ 	@param n, number of vertices in the graph.
+ 	*/
 	public DFS(int n) {
 		graph = new ArrayList[n + 1];
 		visited = new boolean[n + 1];
@@ -19,12 +30,21 @@ public class DFS {
 		}
 	}
 
-
+	/*
+ 	Adds an undirected edge from v to w
+  	@param v, vertex
+   	@param w, vertex
+  	*/
 	public void addEdge(int v, int w) {
 		graph[v].add(w);
 		graph[w].add(v);
 	}
 
+	/*
+ 	Rund DFS and finds the path from starting vertex v to the target node.
+ 	@param v, starting vertex
+  	@param target, target vertex
+ 	*/
 	public void findPath(int v, int target) {
 		dfs(v);
 		edgeTo[v] = Integer.MAX_VALUE;
@@ -45,9 +65,11 @@ public class DFS {
 	}
 
 
-	// Depth First Search
+	/*
+ 	Runs the depth first search algorithm starting at vertex v.
+ 	@param v, vertex
+ 	*/
 	public void dfs(int v) {
-		//System.out.println("Vertex: " + v);
 		visited[v] = true;
 		for (int i = 0; i < graph[v].size(); i++) {
 			int vertex = graph[v].get(i);
