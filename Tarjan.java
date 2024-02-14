@@ -1,3 +1,11 @@
+/**
+ * Implementation of the Tarjan Algorithm to find all strongly connected components
+ * in a graph using DFS and the stack data structure.
+ * 
+ * Time Complexity: O(V + E)
+ * 
+ * @author Khadijah Flowers, khadijah20flowers@gmail.com
+ */
 import java.util.HashMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -13,6 +21,9 @@ public class Tarjan {
 	private int[] ids, llv;
 	private int UID;
 
+	/*
+ 	@param n, size of the graph.
+  	*/
 	public Tarjan(int n) {
 		graph = new HashMap<>();
 		createGraph(n);
