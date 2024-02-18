@@ -11,4 +11,5 @@ Graph Algorithms
 	Bridge Algorithm (Detecting Cut Edges)
  	Tarjan's Strongly Connected Components Algorithm
   	Eulerian Paths and Circuit Algorithm
+   	Prim's MST Algorithm
 
