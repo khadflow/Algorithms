@@ -1,3 +1,4 @@
+import java.security.SecureRandom;
 import java.util.*;
 
 public class RAM {
@@ -110,7 +111,7 @@ public class RAM {
 
 	public void createAdLib() {
 		String ret = "";
-		Random r = new Random();
+		Random r = new SecureRandom();
 		for (int i = 0; i < infoSizes.length; i++) {
 			char c = infoSizes[i].charAt(0);
 			ArrayList<String> wordList = validCharacters.get(c);
